@@ -1,0 +1,65 @@
+.wheelContainer {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.wheelFrame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 96vw;
+    max-width: 475px;
+    height: 96vw;
+    max-height: 475px;
+    z-index: 5;
+    pointer-events: none;
+    .wrapper {
+        margin-top: 10px;
+        transform: rotate(-90deg);
+        > canvas {
+            height: 90vw;
+            width: 90vw;
+            max-width: 440px;
+            max-height: 440px;
+        }
+    }
+}
+
+.frameImage {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.segmentText {
+    font-family: 'Gumdrop', sans-serif;
+}
+
+.spinButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    width: 150px;
+    margin: 20px auto 0 auto;
+    display: block;
+    img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.title {
+    margin: 5px;
+    font-size: 20px;
+}

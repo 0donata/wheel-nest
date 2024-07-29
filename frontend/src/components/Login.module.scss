@@ -1,0 +1,10 @@
+.Login {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    max-width: 50vw;
+    input {
+        padding: 0.5em;
+    }
+}

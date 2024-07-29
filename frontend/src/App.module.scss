@@ -1,0 +1,51 @@
+.main {
+    font-family: 'Gumdrop', sans-serif;
+    width: 100%;
+    min-height: 100vh;
+    background: center url('./assets/bg.jpg');
+    background-size: cover;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .bal {
+            display: flex;
+            flex-direction: column;
+
+            .balance {
+                position: relative;
+                display: flex;
+                align-items: center;
+                img {
+                    height: 40px;
+                    width: auto;
+                }
+
+                .tokenAmount {
+                    position: absolute;
+                    left: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #fff;
+                    font-weight: bold;
+                    font-size: 20px;
+                }
+            }
+        }
+
+        .wallet {
+            margin: 5px;
+            height: 100px;
+            width: auto;
+            cursor: pointer;
+        }
+        .invite {
+            margin: 5px;
+            height: 65px;
+            width: auto;
+            cursor: pointer;
+        }
+    }
+}
