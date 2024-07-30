@@ -5,11 +5,11 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async ({ username, password }, thunkAPI) => {
         try {
-            const response = await axios.post('/api/auth/login', {
+            const response = await axios.post('/auth/login', {
                 username,
                 password,
             })
-            return response.data.token
+            return response.data.access_token
         } catch (error) {
             return thunkAPI.rejectWithValue('Invalid credentials')
         }

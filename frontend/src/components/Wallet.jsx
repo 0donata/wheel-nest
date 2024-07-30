@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSegments } from '../redux/slices/segmentsSlice'
-import { fetchUserBalance, updateUserWallet } from '../redux/slices/userSlice'
-import { submitWithdrawalRequest } from '../redux/slices/withdrawalSlice'
+import { fetchUserBalance } from '../redux/slices/userSlice'
 import css from './Wallet.module.scss'
 
 const Wallet = () => {
@@ -46,8 +45,6 @@ const Wallet = () => {
             setError('Wallet address cannot be empty')
             return
         }
-        const telegramId = window.Telegram.WebApp.initDataUnsafe.user?.id
-        dispatch(updateUserWallet({ telegramId, walletAddress }))
         setError('')
         setIsEditing(false)
     }
@@ -69,16 +66,6 @@ const Wallet = () => {
             setError('The minimum withdrawal amount is 1 USDT')
             return
         }
-        const telegramId = window.Telegram.WebApp.initDataUnsafe.user?.id
-        dispatch(submitWithdrawalRequest({ telegramId }))
-            .then(() => {
-                setSuccess('Withdrawal request submitted')
-                setError('')
-                dispatch(fetchUserBalance(telegramId))
-            })
-            .catch((err) => {
-                setError(err.message || 'An error occurred. Please try again.')
-            })
     }
 
     return (

@@ -4,7 +4,7 @@ import axios from 'axios'
 export const spinWheel = createAsyncThunk(
     'spin/spinWheel',
     async (telegramId) => {
-        const response = await axios.post('/api/spin', { telegramId })
+        const response = await axios.post('/spin', { telegramId })
         console.log(response.data)
         return response.data
     }

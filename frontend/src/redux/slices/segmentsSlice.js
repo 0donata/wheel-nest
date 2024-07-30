@@ -4,7 +4,7 @@ import axios from 'axios'
 export const fetchSegments = createAsyncThunk(
     'segments/fetchSegments',
     async () => {
-        const response = await axios.get('/api/segments')
+        const response = await axios.get('/segments')
         return response.data
     }
 )
@@ -13,8 +13,8 @@ export const updateSegments = createAsyncThunk(
     'segments/updateSegments',
     async (segments, { getState }) => {
         const { auth } = getState()
-        const response = await axios.post('/api/segments', segments, {
-            headers: { 'x-auth-token': auth.token },
+        const response = await axios.post('/segments', segments, {
+            headers: { Authorization: `Bearer ${auth.token}` },
         })
         return response.data
     }

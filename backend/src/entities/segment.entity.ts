@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { SecondWheelPrize } from './second-wheel-prize.entity';
 
-@Entity()
+@Entity('segments')
 export class Segment {
   @PrimaryGeneratedColumn()
   id: number;

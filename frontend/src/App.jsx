@@ -34,6 +34,8 @@ const App = () => {
     const spinResult = useSelector((state) => state.spin)
     const authToken = useSelector((state) => state.auth.token)
 
+    console.log(authToken)
+
     useUserActivity()
 
     const handleFirstSpinEnd = () => {
@@ -143,6 +145,11 @@ const MainPage = ({
         } else {
             setActiveTab(tabName)
         }
+    }
+
+    console.log(segments)
+    if (segments.lenght < 1) {
+        return <div>no data</div>
     }
 
     return (

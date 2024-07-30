@@ -3,12 +3,8 @@
     "private": true,
     "version": "0.0.0",
     "scripts": {
-        "frontend": "vite",
-        "backend": "node -r dotenv/config ./backend/server.js",
-        "bot": "node -r dotenv/config ./backend/bot.js",
-        "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
-        "build:frontend": "vite build",
-        "build": "npm run build:frontend",
+        "dev": "vite",
+        "build": "vite build",
         "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview"
     },

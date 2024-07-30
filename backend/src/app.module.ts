@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { BalanceModule } from './balance/balance.module';
+import { BotModule } from './bot/bot.module';
 import { AuthUser } from './entities/auth-user.entity';
 import { Balance } from './entities/balances.entity';
 import { SecondWheelPrize } from './entities/second-wheel-prize.entity';
@@ -36,11 +39,15 @@ import { UserModule } from './users/users.module';
       synchronize: false,
       logging: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../frontend/dist'),
+    }),
     UserModule,
     SegmentModule,
     SpinModule,
     BalanceModule,
     AuthModule,
+    BotModule,
   ],
 })
 export class AppModule {}
