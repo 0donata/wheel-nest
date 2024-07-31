@@ -4,7 +4,7 @@ import axios from 'axios'
 export const fetchUserSpins = createAsyncThunk(
     'user/fetchUserSpins',
     async (telegramId) => {
-        const response = await axios.get(`/user/spins?telegramId=${telegramId}`)
+        const response = await axios.get(`/users/spins/${telegramId}`)
         return response.data.spins
     }
 )
@@ -12,9 +12,7 @@ export const fetchUserSpins = createAsyncThunk(
 export const fetchUserBalance = createAsyncThunk(
     'user/fetchUserBalance',
     async (telegramId) => {
-        const response = await axios.get(
-            `/user/balance?telegramId=${telegramId}`
-        )
+        const response = await axios.get(`/user/balance/${telegramId}`)
         return response.data
     }
 )
@@ -25,7 +23,6 @@ const userSlice = createSlice({
         spins: 0,
         balance: {},
         status: 'idle',
-        walletAddress: '',
         error: null,
     },
     reducers: {},
@@ -43,8 +40,7 @@ const userSlice = createSlice({
                 state.error = action.error.message
             })
             .addCase(fetchUserBalance.fulfilled, (state, action) => {
-                state.balance = action.payload.balance
-                state.walletAddress = action.payload.walletAddress
+                state.balance = action.payload
             })
     },
 })

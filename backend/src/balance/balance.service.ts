@@ -17,15 +17,24 @@ export class BalanceService {
   ) {}
 
   async getBalance(userId: number) {
+    const balances = await this.balanceRepository.find();
+
     const userBalances = await this.userBalanceRepository.find({
       where: { user: { id: userId } },
       relations: ['balance'],
     });
-    return userBalances.map((userBalance) => ({
-      balanceId: userBalance.balance.id,
-      balanceName: userBalance.balance.name,
-      amount: userBalance.amount,
-    }));
+
+    const userBalancesMap = userBalances.reduce((acc, ub) => {
+      acc[ub.balance.name] = ub.amount;
+      return acc;
+    }, {});
+
+    const result = balances.reduce((acc, balance) => {
+      acc[balance.name] = userBalancesMap[balance.name] || 0;
+      return acc;
+    }, {});
+
+    return result;
   }
 
   async updateBalance(userId: number, balanceId: number, amount: number) {

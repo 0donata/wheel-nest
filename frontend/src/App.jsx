@@ -9,19 +9,15 @@ import {
 import { useUserActivity } from './api/hooks'
 import css from './App.module.scss'
 import spinsImage from './assets/Free-spin.png'
-import inviteImg from './assets/invite.png'
 import usdtImage from './assets/Tether.png'
 import tethertBalImg from './assets/TetherBal.png'
 import tokenImage from './assets/Token.png'
 import tokenBalImg from './assets/TokenBal.png'
-import walletImg from './assets/wallet.png'
 import AdminPanel from './components/Admin/AdminPanel'
 import FirstWheel from './components/FirstWheel'
-import InvitePopup from './components/Invite'
 import Login from './components/Login'
 import Popup from './components/Popup'
 import SecondWheel from './components/SecondWheel'
-import Wallet from './components/Wallet'
 import { clearAuthToken } from './redux/slices/authSlice'
 import { fetchUserBalance, fetchUserSpins } from './redux/slices/userSlice'
 
@@ -33,8 +29,6 @@ const App = () => {
     const segments = useSelector((state) => state.segments.segments)
     const spinResult = useSelector((state) => state.spin)
     const authToken = useSelector((state) => state.auth.token)
-
-    console.log(authToken)
 
     useUserActivity()
 
@@ -147,11 +141,6 @@ const MainPage = ({
         }
     }
 
-    console.log(segments)
-    if (segments.lenght < 1) {
-        return <div>no data</div>
-    }
-
     return (
         <div className={css.main}>
             <div className={css.header}>
@@ -169,18 +158,6 @@ const MainPage = ({
                         </span>
                     </div>
                 </div>
-                <img
-                    className={css.invite}
-                    onClick={() => togglePopup('invite')}
-                    src={inviteImg}
-                    alt="Invite"
-                />
-                <img
-                    className={css.wallet}
-                    onClick={() => togglePopup('wallet')}
-                    src={walletImg}
-                    alt="Wallet"
-                />
             </div>
 
             {showWinPopup && (
@@ -197,22 +174,6 @@ const MainPage = ({
                             </p>
                         </div>
                     }
-                />
-            )}
-
-            {activeTab === 'invite' && (
-                <Popup
-                    title="Invite Friends"
-                    onClose={() => togglePopup('invite')}
-                    content={<InvitePopup />}
-                />
-            )}
-
-            {activeTab === 'wallet' && (
-                <Popup
-                    title="Withdraw"
-                    onClose={() => togglePopup('wallet')}
-                    content={<Wallet />}
                 />
             )}
 

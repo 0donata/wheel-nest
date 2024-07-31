@@ -30,4 +30,13 @@ export class UserService {
     }
     return null;
   }
+  async getUserSpins(telegramId: string): Promise<number> {
+    const user = await this.usersRepository.findOne({
+      where: { id: parseInt(telegramId, 10) },
+    });
+    if (user) {
+      return user.spins;
+    }
+    throw new Error('User not found');
+  }
 }

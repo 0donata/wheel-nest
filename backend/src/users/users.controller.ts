@@ -20,4 +20,9 @@ export class UserController {
   addSpin(@Body('id') id: string): Promise<User> {
     return this.userService.addSpin(id);
   }
+  @Get('spins/:telegramId')
+  async getUserSpins(@Param('telegramId') telegramId: string) {
+    const spins = await this.userService.getUserSpins(telegramId);
+    return { spins };
+  }
 }

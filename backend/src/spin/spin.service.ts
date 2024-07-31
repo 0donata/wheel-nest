@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Balance } from 'src/entities/balances.entity';
+import { UserBalance } from 'src/entities/user-balance.entity';
 import { Repository } from 'typeorm';
 import { Segment } from '../entities/segment.entity';
 import { User } from '../entities/user.entity';
@@ -11,6 +13,10 @@ export class SpinService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Segment)
     private readonly segmentRepository: Repository<Segment>,
+    @InjectRepository(UserBalance)
+    private readonly userBalanceRepository: Repository<UserBalance>,
+    @InjectRepository(Balance)
+    private readonly balanceRepository: Repository<Balance>,
   ) {}
 
   async spinWheel(id: number) {
@@ -29,16 +35,15 @@ export class SpinService {
       throw new Error('No valid segments available');
     }
 
-    // First wheel spin logic
     const totalWeight = validSegments.reduce(
-      (sum, segment) => sum + Math.max(segment.weight, 0),
+      (sum, segment) => sum + segment.weight,
       0,
     );
     let random = Math.random() * totalWeight;
     let firstWheelPrize = null;
 
     for (const segment of validSegments) {
-      random -= Math.max(segment.weight, 0);
+      random -= segment.weight;
       if (random <= 0) {
         firstWheelPrize = segment;
         break;
@@ -49,58 +54,53 @@ export class SpinService {
 
     if (firstWheelPrize.specialType === 'Try again') {
       await this.userRepository.save(user);
-      return {
-        firstWheelPrize: {
-          name: firstWheelPrize.name,
-          weight: firstWheelPrize.weight,
-          specialType: firstWheelPrize.specialType,
-          secondWheelPrizes: [],
-        },
-        secondWheelPrize: null,
-      };
+      return { firstWheelPrize, secondWheelPrize: null };
     }
 
     let secondWheelPrize = null;
     const secondWheelPrizes = firstWheelPrize.secondWheelPrizes || [];
 
-    if (firstWheelPrize.specialType === 'Free spin') {
-      secondWheelPrize = secondWheelPrizes[0];
-      user.spins += +secondWheelPrize.name;
-    } else if (secondWheelPrizes.length > 0) {
+    if (secondWheelPrizes.length > 0) {
       const totalWeightSecond = secondWheelPrizes.reduce(
-        (sum, prize) => sum + Math.max(prize.weight, 0),
+        (sum, prize) => sum + prize.weight,
         0,
       );
       random = Math.random() * totalWeightSecond;
 
       for (const prize of secondWheelPrizes) {
-        random -= Math.max(prize.weight, 0);
+        random -= prize.weight;
         if (random <= 0) {
           secondWheelPrize = prize;
           break;
         }
       }
+    }
 
-      const currentBalance = user.balance[firstWheelPrize.name] || 0;
-      user.balance[firstWheelPrize.name] =
-        currentBalance + +secondWheelPrize.name;
+    if (secondWheelPrize) {
+      const balance = await this.balanceRepository.findOne({
+        where: { name: firstWheelPrize.specialType },
+      });
+      if (balance) {
+        let userBalance = await this.userBalanceRepository.findOne({
+          where: { user: { id: user.id }, balance: { id: balance.id } },
+        });
+
+        if (!userBalance) {
+          userBalance = this.userBalanceRepository.create({
+            user,
+            balance,
+            amount: +secondWheelPrize.name,
+          });
+        } else {
+          userBalance.amount += +secondWheelPrize.name;
+        }
+
+        await this.userBalanceRepository.save(userBalance);
+      }
     }
 
     await this.userRepository.save(user);
 
-    return {
-      firstWheelPrize: {
-        name: firstWheelPrize.name,
-        weight: firstWheelPrize.weight,
-        specialType: firstWheelPrize.specialType,
-        secondWheelPrizes: secondWheelPrizes,
-      },
-      secondWheelPrize: secondWheelPrize
-        ? {
-            name: secondWheelPrize.name,
-            weight: secondWheelPrize.weight,
-          }
-        : null,
-    };
+    return { firstWheelPrize, secondWheelPrize };
   }
 }
