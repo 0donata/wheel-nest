@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Balance } from 'src/entities/balances.entity';
 import { BalanceService } from './balance.service';
 
 @Controller('user/balance')
@@ -19,5 +20,15 @@ export class BalanceController {
       updateBalanceDto.balanceId,
       updateBalanceDto.amount,
     );
+  }
+}
+
+@Controller('balances')
+export class BalancesController {
+  constructor(private balanceService: BalanceService) {}
+
+  @Get()
+  findAll(): Promise<Balance[]> {
+    return this.balanceService.findAll();
   }
 }

@@ -171,9 +171,8 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                 ctx.fillStyle = segment.color
                 ctx.fill()
 
-                // Draw the border
-                ctx.lineWidth = 2 // Set the border thickness
-                ctx.strokeStyle = '#a34808' // Set the border color
+                ctx.lineWidth = 2
+                ctx.strokeStyle = '#a34808'
                 ctx.stroke()
 
                 if (segment.image) {
@@ -192,7 +191,7 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                             -imgHeight / 2,
                             imgWidth,
                             imgHeight
-                        ) // Adjusted position closer to center
+                        )
                         ctx.restore()
                     }
                 } else {
@@ -200,14 +199,13 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                     ctx.translate(centerX, centerY)
                     ctx.rotate(angle + (nextAngle - angle) / 2)
                     ctx.fillStyle = '#000000'
-                    ctx.fillText(segment.option, radius / 3, 0) // Adjusted position closer to center
+                    ctx.fillText(segment.option, radius / 3, 0)
                     ctx.restore()
                 }
             })
         }
 
         if (Object.keys(preloadedImages).length === 7) {
-            // Check if all images are preloaded
             drawWheel()
         }
     }, [data, rotation, preloadedImages])

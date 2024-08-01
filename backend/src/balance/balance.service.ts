@@ -16,6 +16,10 @@ export class BalanceService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async findAll(): Promise<Balance[]> {
+    return this.balanceRepository.find();
+  }
+
   async getBalance(userId: number) {
     const balances = await this.balanceRepository.find();
 

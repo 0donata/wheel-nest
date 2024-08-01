@@ -12,15 +12,8 @@ export class Segment {
   @Column()
   weight: number;
 
-  @Column({
-    type: 'enum',
-    enum: ['Lose', 'Free spin', 'Tether', 'Token'],
-    default: 'Lose',
-  })
+  @Column()
   specialType: string;
-
-  @Column({ type: 'float', default: 1 })
-  conversionRate: number;
 
   @OneToMany(() => SecondWheelPrize, (prize) => prize.segment, {
     cascade: true,

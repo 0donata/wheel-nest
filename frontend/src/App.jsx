@@ -126,20 +126,11 @@ const MainPage = ({
 }) => {
     const dispatch = useDispatch()
     const user = useSelector((state) => state.user)
-    const [activeTab, setActiveTab] = useState(null)
 
     useEffect(() => {
         const telegramId = window.Telegram.WebApp.initDataUnsafe.user?.id
         dispatch(fetchUserBalance(telegramId))
     }, [dispatch])
-
-    const togglePopup = (tabName) => {
-        if (activeTab === tabName) {
-            setActiveTab(null)
-        } else {
-            setActiveTab(tabName)
-        }
-    }
 
     return (
         <div className={css.main}>
@@ -159,7 +150,6 @@ const MainPage = ({
                     </div>
                 </div>
             </div>
-
             {showWinPopup && (
                 <Popup
                     title="Your Prize"
@@ -176,9 +166,7 @@ const MainPage = ({
                     }
                 />
             )}
-
-            {!activeTab &&
-                !showWinPopup &&
+            {!showWinPopup &&
                 (showSecondWheel ? (
                     <SecondWheel
                         segments={

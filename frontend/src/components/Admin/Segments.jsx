@@ -1,3 +1,4 @@
+import { fetchBalances } from '@/redux/slices/balancesSlice'
 import cloneDeep from 'lodash/cloneDeep'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,16 +8,18 @@ import css from './AdminPanel.module.scss'
 const Segments = () => {
     const dispatch = useDispatch()
     const segments = useSelector((state) => state.segments.segments)
+    const { items: balances } = useSelector((state) => state.balances)
+
     const [localSegments, setLocalSegments] = useState([])
     const [newSegmentName, setNewSegmentName] = useState('')
     const [newSegmentWeight, setNewSegmentWeight] = useState(1)
-    const [newSegmentConversionRate, setNewSegmentConversionRate] = useState(1)
     const [newSegmentSpecialType, setNewSegmentSpecialType] = useState('Tether')
     const [errorMessage, setErrorMessage] = useState('')
     const [saveStatus, setSaveStatus] = useState(null)
 
     useEffect(() => {
         dispatch(fetchSegments())
+        dispatch(fetchBalances())
     }, [dispatch])
 
     useEffect(() => {
@@ -61,18 +64,9 @@ const Segments = () => {
         setLocalSegments(updatedSegments)
     }
 
-    const handleConversionRateChange = (index, rate) => {
-        const updatedSegments = cloneDeep(localSegments)
-        updatedSegments[index].conversionRate = parseFloat(rate)
-        setLocalSegments(updatedSegments)
-    }
-
     const handleSpecialTypeChange = (index, type) => {
         const updatedSegments = cloneDeep(localSegments)
         updatedSegments[index].specialType = type
-        if (type !== 'Tether' || type !== 'Token') {
-            updatedSegments[index].conversionRate = 1
-        }
         setLocalSegments(updatedSegments)
     }
 
@@ -81,16 +75,6 @@ const Segments = () => {
             if (!segment.name || segment.weight < 0) {
                 setErrorMessage(
                     'All segments must have a name and weight greater than or equal to 0.'
-                )
-                return
-            }
-            if (
-                (segment.specialType === 'Tether' ||
-                    segment.specialType === 'Token') &&
-                segment.conversionRate <= 0
-            ) {
-                setErrorMessage(
-                    'Conversion rate must be greater than 0 for non-special segments.'
                 )
                 return
             }
@@ -105,6 +89,7 @@ const Segments = () => {
         }
         setErrorMessage('')
         try {
+            console.log(localSegments)
             await dispatch(updateSegments(localSegments))
             setSaveStatus('success')
         } catch (error) {
@@ -122,18 +107,12 @@ const Segments = () => {
         const newSegment = {
             name: newSegmentName,
             weight: parseFloat(newSegmentWeight),
-            conversionRate:
-                newSegmentSpecialType === 'Tether' ||
-                newSegmentSpecialType === 'Token'
-                    ? parseFloat(newSegmentConversionRate)
-                    : 1,
             specialType: newSegmentSpecialType,
             secondWheelPrizes: [],
         }
         setLocalSegments([...localSegments, newSegment])
         setNewSegmentName('')
         setNewSegmentWeight(1)
-        setNewSegmentConversionRate(1)
         setNewSegmentSpecialType('Tether')
         setErrorMessage('')
     }
@@ -177,20 +156,6 @@ const Segments = () => {
                         onChange={(e) => setNewSegmentWeight(e.target.value)}
                     />
                 </div>
-                {(newSegmentSpecialType === 'Tether' ||
-                    newSegmentSpecialType === 'Token') && (
-                    <div className={css.item}>
-                        rate
-                        <input
-                            type="number"
-                            placeholder="Conversion Rate"
-                            value={newSegmentConversionRate}
-                            onChange={(e) =>
-                                setNewSegmentConversionRate(e.target.value)
-                            }
-                        />
-                    </div>
-                )}
                 <div className={css.item}>
                     type
                     <select
@@ -199,10 +164,13 @@ const Segments = () => {
                             setNewSegmentSpecialType(e.target.value)
                         }
                     >
-                        <option value="Tether">Tether</option>
-                        <option value="Token">Token</option>
                         <option value="Lose">Lose</option>
                         <option value="Free spin">Free spin</option>
+                        {balances.map((balance) => (
+                            <option key={balance.id} value={balance.name}>
+                                {balance.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <button onClick={handleAddSegment}>Add New Segment</button>
@@ -230,22 +198,6 @@ const Segments = () => {
                                 }
                             />
                         </div>
-                        {(segment.specialType === 'Tether' ||
-                            segment.specialType === 'Token') && (
-                            <div className={css.item}>
-                                rate
-                                <input
-                                    type="number"
-                                    value={segment.conversionRate}
-                                    onChange={(e) =>
-                                        handleConversionRateChange(
-                                            index,
-                                            e.target.value
-                                        )
-                                    }
-                                />
-                            </div>
-                        )}
                         <div className={css.item}>
                             type
                             <select
@@ -257,10 +209,16 @@ const Segments = () => {
                                     )
                                 }
                             >
-                                <option value="Tether">Tether</option>
-                                <option value="Token">Token</option>
                                 <option value="Lose">Lose</option>
                                 <option value="Free spin">Free spin</option>
+                                {balances.map((balance) => (
+                                    <option
+                                        key={balance.id}
+                                        value={balance.name}
+                                    >
+                                        {balance.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <button onClick={() => handleRemoveSegment(index)}>
