@@ -97,8 +97,20 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
                 ctx.closePath()
                 ctx.fillStyle = segment.color
                 ctx.fill()
-                ctx.strokeStyle = '#a34808' // Line color
-                ctx.lineWidth = 2 // Line width
+
+                const gradient = ctx.createRadialGradient(
+                    centerX,
+                    centerY,
+                    0,
+                    centerX,
+                    centerY,
+                    radius
+                )
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.31)')
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0.31)')
+
+                ctx.lineWidth = 8
+                ctx.strokeStyle = gradient
                 ctx.stroke()
 
                 ctx.save()

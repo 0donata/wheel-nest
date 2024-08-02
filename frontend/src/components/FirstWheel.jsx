@@ -10,16 +10,7 @@ import tokenImage from '../assets/Token.png'
 import { spinWheel } from '../redux/slices/spinSlice'
 import css from './Wheel.module.scss'
 
-const segmentColors = [
-    '#6db436',
-    '#d19f36',
-    '#cc3437',
-    '#9730bd',
-    '#c03880',
-    '#1a885a',
-    '#df7a42',
-    '#4392c0',
-]
+const segmentColors = ['#a83edb', '#21996c']
 
 const FirstWheel = ({ segments, onSpinEnd, title }) => {
     const canvasRef = useRef(null)
@@ -78,7 +69,7 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                 } else if (segment.specialType === 'Token') {
                     image = {
                         img: preloadedImages.tokenImage,
-                        sizeMultiplier: 0.4,
+                        sizeMultiplier: 0.6,
                     }
                 } else if (segment.specialType === 'Tether') {
                     image = {
@@ -171,8 +162,19 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                 ctx.fillStyle = segment.color
                 ctx.fill()
 
-                ctx.lineWidth = 2
-                ctx.strokeStyle = '#a34808'
+                const gradient = ctx.createRadialGradient(
+                    centerX,
+                    centerY,
+                    0,
+                    centerX,
+                    centerY,
+                    radius
+                )
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.31)')
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0.31)')
+
+                ctx.lineWidth = 8
+                ctx.strokeStyle = gradient
                 ctx.stroke()
 
                 if (segment.image) {
