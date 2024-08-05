@@ -13,7 +13,7 @@ export class UserBalance {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @ManyToOne(() => User, (user) => user.userBalances)

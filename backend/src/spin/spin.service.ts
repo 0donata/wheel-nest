@@ -80,20 +80,29 @@ export class SpinService {
       const balance = await this.balanceRepository.findOne({
         where: { name: firstWheelPrize.specialType },
       });
+
       if (balance) {
         let userBalance = await this.userBalanceRepository.findOne({
           where: { user: { id: user.id }, balance: { id: balance.id } },
         });
 
+        const prizeAmount = parseFloat(secondWheelPrize.name);
+        console.log('Before update:', userBalance.amount);
+
         if (!userBalance) {
           userBalance = this.userBalanceRepository.create({
             user,
             balance,
-            amount: +secondWheelPrize.name,
+            amount: prizeAmount,
           });
         } else {
-          userBalance.amount += +secondWheelPrize.name;
+          const currentAmount = parseFloat(
+            userBalance.amount as unknown as string,
+          );
+          userBalance.amount = currentAmount + prizeAmount;
         }
+
+        console.log('After update:', userBalance.amount);
 
         await this.userBalanceRepository.save(userBalance);
       }

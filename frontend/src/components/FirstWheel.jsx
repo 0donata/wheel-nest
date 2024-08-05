@@ -2,15 +2,50 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import pressedButton from '../assets/button-active.png'
 import normalButton from '../assets/button-normal.png'
+import dogeImage from '../assets/Doge.png'
 import frameImage from '../assets/frame.png'
 import spinsImage from '../assets/Free-spin.png'
 import loseImage from '../assets/Lose.png'
+import pepeImage from '../assets/Pepe.png'
 import usdtImage from '../assets/Tether.png'
 import tokenImage from '../assets/Token.png'
 import { spinWheel } from '../redux/slices/spinSlice'
 import css from './Wheel.module.scss'
 
 const segmentColors = ['#a83edb', '#21996c']
+
+const segmentConfig = {
+    'Free spin': {
+        img: 'spinsImage',
+        sizeMultiplier: 0.25,
+        offsetMultiplier: 0.35,
+    },
+    Token: {
+        img: 'tokenImage',
+        sizeMultiplier: 0.6,
+        offsetMultiplier: 0.45,
+    },
+    Tether: {
+        img: 'usdtImage',
+        sizeMultiplier: 0.55,
+        offsetMultiplier: 0.45,
+    },
+    Lose: {
+        img: 'loseImage',
+        sizeMultiplier: 0.25,
+        offsetMultiplier: 0.35,
+    },
+    Pepe: {
+        img: 'pepeImage',
+        sizeMultiplier: 0.55,
+        offsetMultiplier: 0.45,
+    },
+    Shib: {
+        img: 'dogeImage',
+        sizeMultiplier: 0.55,
+        offsetMultiplier: 0.45,
+    },
+}
 
 const FirstWheel = ({ segments, onSpinEnd, title }) => {
     const canvasRef = useRef(null)
@@ -32,6 +67,8 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
             pressedButton,
             normalButton,
             frameImage,
+            pepeImage,
+            dogeImage,
         }
 
         const images = {}
@@ -58,38 +95,23 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
     }, [user.spins])
 
     const data = useMemo(() => {
-        if (segments && segments.length > 0) {
-            return segments.map((segment, index) => {
-                let image = null
-                if (segment.specialType === 'Free spin') {
-                    image = {
-                        img: preloadedImages.spinsImage,
-                        sizeMultiplier: 0.1,
-                    }
-                } else if (segment.specialType === 'Token') {
-                    image = {
-                        img: preloadedImages.tokenImage,
-                        sizeMultiplier: 0.6,
-                    }
-                } else if (segment.specialType === 'Tether') {
-                    image = {
-                        img: preloadedImages.usdtImage,
-                        sizeMultiplier: 0.5,
-                    }
-                } else if (segment.specialType === 'Lose') {
-                    image = {
-                        img: preloadedImages.loseImage,
-                        sizeMultiplier: 0.12,
-                    }
-                }
-                return {
-                    option: segment.name,
-                    image: image,
-                    color: segmentColors[index % segmentColors.length],
-                }
-            })
-        }
-        return []
+        return segments.map((segment, index) => {
+            const config = segmentConfig[segment.specialType] || {}
+            const imgKey = config.img
+            const image = preloadedImages[imgKey]
+                ? {
+                      img: preloadedImages[imgKey],
+                      sizeMultiplier: config.sizeMultiplier,
+                      offsetMultiplier: config.offsetMultiplier,
+                  }
+                : null
+
+            return {
+                option: segment.name,
+                image: image,
+                color: segmentColors[index % segmentColors.length],
+            }
+        })
     }, [segments, preloadedImages])
 
     useEffect(() => {
@@ -189,7 +211,7 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                             img.height * (segment.image.sizeMultiplier || 1)
                         ctx.drawImage(
                             img,
-                            radius / 2.5,
+                            radius * segment.image.offsetMultiplier,
                             -imgHeight / 2,
                             imgWidth,
                             imgHeight
@@ -207,9 +229,7 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
             })
         }
 
-        if (Object.keys(preloadedImages).length === 7) {
-            drawWheel()
-        }
+        drawWheel()
     }, [data, rotation, preloadedImages])
 
     return (

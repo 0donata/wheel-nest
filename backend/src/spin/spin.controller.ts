@@ -7,8 +7,6 @@ export class SpinController {
 
   @Post()
   async spin(@Body('telegramId') id: number) {
-    console.log(id);
-
     const result = await this.spinService.spinWheel(id);
     return result;
   }

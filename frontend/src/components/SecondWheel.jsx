@@ -5,16 +5,9 @@ import normalButton from '../assets/button-normal.png'
 import frameImage from '../assets/frame.png'
 import css from './Wheel.module.scss'
 
-const segmentColors = [
-    '#6db436',
-    '#d19f36',
-    '#cc3437',
-    '#9730bd',
-    '#c03880',
-    '#1a885a',
-    '#df7a42',
-    '#4392c0',
-]
+const segmentColors = ['#a83edb', '#21996c']
+const borderColor = ['#10593e', '#571877']
+const textColor = ['#b8eae7', '#ffb6ff']
 
 const SecondWheel = ({ segments, onSpinEnd, title }) => {
     const canvasRef = useRef(null)
@@ -28,6 +21,8 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
             return segments.map((segment, index) => ({
                 option: segment.name,
                 color: segmentColors[index % segmentColors.length],
+                border: borderColor[index % borderColor.length],
+                text: textColor[index % textColor.length],
             }))
         }
         return []
@@ -108,7 +103,6 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
                 )
                 gradient.addColorStop(0, 'rgba(255, 255, 255, 0.31)')
                 gradient.addColorStop(1, 'rgba(255, 255, 255, 0.31)')
-
                 ctx.lineWidth = 8
                 ctx.strokeStyle = gradient
                 ctx.stroke()
@@ -116,11 +110,18 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
                 ctx.save()
                 ctx.translate(centerX, centerY)
                 ctx.rotate(angle + (nextAngle - angle) / 2)
-                ctx.fillStyle = '#fff'
+                ctx.rotate(Math.PI / 2)
+
+                ctx.fillStyle = segment.text
                 ctx.font = '60px Gumdrop, sans-serif'
                 ctx.textAlign = 'center'
                 ctx.textBaseline = 'middle'
-                ctx.fillText(segment.option, radius / 2, 0)
+
+                ctx.lineWidth = 4
+                ctx.strokeStyle = segment.border
+                ctx.strokeText(segment.option, 0, -radius / 2)
+                ctx.fillText(segment.option, 0, -radius / 2)
+
                 ctx.restore()
             })
         }
