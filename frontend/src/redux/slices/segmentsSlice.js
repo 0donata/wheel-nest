@@ -5,7 +5,7 @@ export const fetchSegments = createAsyncThunk(
     'segments/fetchSegments',
     async () => {
         const response = await axios.get('/segments')
-        return response.data
+        return response.data.sort((a, b) => a.order - b.order)
     }
 )
 

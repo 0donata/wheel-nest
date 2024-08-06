@@ -26,6 +26,38 @@ const Segments = () => {
         setLocalSegments(cloneDeep(segments))
     }, [segments])
 
+    useEffect(() => {
+        const orderedSegments = segments.map((segment, index) => ({
+            ...segment,
+            order: index,
+        }))
+        setLocalSegments(orderedSegments)
+    }, [segments])
+
+    const handleDragStart = (event, index) => {
+        event.dataTransfer.setData('text/plain', index)
+    }
+
+    const handleDrop = (event, index) => {
+        const movingItemIndex = event.dataTransfer.getData('text/plain')
+        if (movingItemIndex) {
+            const items = [...localSegments]
+            const [reorderedItem] = items.splice(movingItemIndex, 1)
+            items.splice(index, 0, reorderedItem)
+
+            const updatedItems = items.map((item, newIndex) => ({
+                ...item,
+                order: newIndex,
+            }))
+
+            setLocalSegments(updatedItems)
+        }
+    }
+
+    const handleDragOver = (ev) => {
+        ev.preventDefault()
+    }
+
     const handleWeightChange = (index, weight) => {
         const updatedSegments = cloneDeep(localSegments)
         updatedSegments[index].weight = parseFloat(weight)
@@ -88,9 +120,13 @@ const Segments = () => {
             }
         }
         setErrorMessage('')
+        const orderedData = localSegments.map((segment, index) => ({
+            ...segment,
+            order: index,
+        }))
         try {
-            console.log(localSegments)
-            await dispatch(updateSegments(localSegments))
+            console.log(orderedData)
+            await dispatch(updateSegments(orderedData))
             setSaveStatus('success')
         } catch (error) {
             setSaveStatus('error')
@@ -177,7 +213,14 @@ const Segments = () => {
             </div>
             <div className={css.segments}>
                 {localSegments.map((segment, index) => (
-                    <div className={css.section} key={index}>
+                    <div
+                        className={css.section}
+                        key={index}
+                        draggable
+                        onDragStart={(ev) => handleDragStart(ev, index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(ev) => handleDrop(ev, index)}
+                    >
                         <div className={css.item}>
                             name
                             <input

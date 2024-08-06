@@ -10,6 +10,9 @@ export class Segment {
   name: string;
 
   @Column()
+  order: number;
+
+  @Column()
   weight: number;
 
   @Column()

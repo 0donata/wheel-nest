@@ -23,12 +23,12 @@ const segmentConfig = {
     Token: {
         img: 'tokenImage',
         sizeMultiplier: 0.6,
-        offsetMultiplier: 0.45,
+        offsetMultiplier: 0.65,
     },
     Tether: {
         img: 'usdtImage',
         sizeMultiplier: 0.55,
-        offsetMultiplier: 0.45,
+        offsetMultiplier: 0.65,
     },
     Lose: {
         img: 'loseImage',
@@ -38,12 +38,12 @@ const segmentConfig = {
     Pepe: {
         img: 'pepeImage',
         sizeMultiplier: 0.55,
-        offsetMultiplier: 0.45,
+        offsetMultiplier: 0.65,
     },
     Shib: {
         img: 'dogeImage',
         sizeMultiplier: 0.55,
-        offsetMultiplier: 0.45,
+        offsetMultiplier: 0.65,
     },
 }
 
@@ -110,6 +110,7 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                 option: segment.name,
                 image: image,
                 color: segmentColors[index % segmentColors.length],
+                specialType: segment.specialType,
             }
         })
     }, [segments, preloadedImages])
@@ -209,13 +210,30 @@ const FirstWheel = ({ segments, onSpinEnd, title }) => {
                             img.width * (segment.image.sizeMultiplier || 1)
                         const imgHeight =
                             img.height * (segment.image.sizeMultiplier || 1)
-                        ctx.drawImage(
-                            img,
-                            radius * segment.image.offsetMultiplier,
-                            -imgHeight / 2,
-                            imgWidth,
-                            imgHeight
-                        )
+
+                        if (
+                            segment.specialType !== 'Free spin' &&
+                            segment.specialType !== 'Lose'
+                        ) {
+                            ctx.rotate(Math.PI / 2)
+                            ctx.drawImage(
+                                img,
+                                -imgWidth / 2,
+                                -radius * segment.image.offsetMultiplier -
+                                    imgHeight / 2,
+                                imgWidth,
+                                imgHeight
+                            )
+                        } else {
+                            ctx.drawImage(
+                                img,
+                                radius * segment.image.offsetMultiplier,
+                                -imgHeight / 2,
+                                imgWidth,
+                                imgHeight
+                            )
+                        }
+
                         ctx.restore()
                     }
                 } else {

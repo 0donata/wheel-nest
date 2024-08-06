@@ -103,6 +103,7 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
                 )
                 gradient.addColorStop(0, 'rgba(255, 255, 255, 0.31)')
                 gradient.addColorStop(1, 'rgba(255, 255, 255, 0.31)')
+
                 ctx.lineWidth = 8
                 ctx.strokeStyle = gradient
                 ctx.stroke()
@@ -113,7 +114,7 @@ const SecondWheel = ({ segments, onSpinEnd, title }) => {
                 ctx.rotate(Math.PI / 2)
 
                 ctx.fillStyle = segment.text
-                ctx.font = '60px Gumdrop, sans-serif'
+                ctx.font = '60px RaceSport, sans-serif'
                 ctx.textAlign = 'center'
                 ctx.textBaseline = 'middle'
 

@@ -10,9 +10,7 @@ import { useUserActivity } from './api/hooks'
 import css from './App.module.scss'
 import spinsImage from './assets/Free-spin.png'
 import usdtImage from './assets/Tether.png'
-import tethertBalImg from './assets/TetherBal.png'
 import tokenImage from './assets/Token.png'
-import tokenBalImg from './assets/TokenBal.png'
 import AdminPanel from './components/Admin/AdminPanel'
 import FirstWheel from './components/FirstWheel'
 import Login from './components/Login'
@@ -125,7 +123,6 @@ const MainPage = ({
     closeWinPopup,
 }) => {
     const dispatch = useDispatch()
-    const user = useSelector((state) => state.user)
 
     useEffect(() => {
         const telegramId = window.Telegram.WebApp.initDataUnsafe.user?.id
@@ -134,22 +131,6 @@ const MainPage = ({
 
     return (
         <div className={css.main}>
-            <div className={css.header}>
-                <div className={css.bal}>
-                    <div className={css.balance}>
-                        <img src={tethertBalImg} alt="Tether Balance" />
-                        <span className={css.tokenAmount}>
-                            {user.balance?.Tether || 0}
-                        </span>
-                    </div>
-                    <div className={css.balance}>
-                        <img src={tokenBalImg} alt="Token Balance" />
-                        <span className={css.tokenAmount}>
-                            {user.balance?.Token || 0}
-                        </span>
-                    </div>
-                </div>
-            </div>
             {showWinPopup && (
                 <Popup
                     title="Your Prize"
