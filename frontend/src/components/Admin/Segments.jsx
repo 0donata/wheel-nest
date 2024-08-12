@@ -202,6 +202,7 @@ const Segments = () => {
                     >
                         <option value="Lose">Lose</option>
                         <option value="Free spin">Free spin</option>
+                        <option value="Token">Token</option>
                         {balances.map((balance) => (
                             <option key={balance.id} value={balance.name}>
                                 {balance.name}
@@ -213,14 +214,16 @@ const Segments = () => {
             </div>
             <div className={css.segments}>
                 {localSegments.map((segment, index) => (
-                    <div
-                        className={css.section}
-                        key={index}
-                        draggable
-                        onDragStart={(ev) => handleDragStart(ev, index)}
-                        onDragOver={handleDragOver}
-                        onDrop={(ev) => handleDrop(ev, index)}
-                    >
+                    <div className={css.section} key={index}>
+                        <div
+                            className={css.dragHandle}
+                            draggable="true"
+                            onDragStart={(ev) => handleDragStart(ev, index)}
+                            onDragOver={handleDragOver}
+                            onDrop={(ev) => handleDrop(ev, index)}
+                        >
+                            &#x2630;
+                        </div>
                         <div className={css.item}>
                             name
                             <input
@@ -254,6 +257,7 @@ const Segments = () => {
                             >
                                 <option value="Lose">Lose</option>
                                 <option value="Free spin">Free spin</option>
+                                <option value="Token">Token</option>
                                 {balances.map((balance) => (
                                     <option
                                         key={balance.id}

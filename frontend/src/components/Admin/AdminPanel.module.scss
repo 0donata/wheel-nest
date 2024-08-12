@@ -38,7 +38,6 @@
     }
     .section {
         border: 1px solid #ffffff46;
-        cursor: grab;
     }
 
     .section,
@@ -67,5 +66,13 @@
         .active {
             border-bottom: 2px solid green;
         }
+    }
+    .dragHandle {
+        padding: 8px;
+        border: 1px solid #ffffff46;
+        cursor: grab;
+        text-align: center;
+        font-weight: bold;
+        user-select: none;
     }
 }

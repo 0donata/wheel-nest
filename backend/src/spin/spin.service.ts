@@ -31,34 +31,31 @@ export class SpinService {
     }
 
     const validSegments = segments.filter((segment) => segment.weight >= 0);
-    if (validSegments.length === 0) {
-      throw new Error('No valid segments available');
-    }
-
     const totalWeight = validSegments.reduce(
       (sum, segment) => sum + segment.weight,
       0,
     );
+
     let random = Math.random() * totalWeight;
-    let firstWheelPrize = null;
+    let selectedSegment = null;
 
     for (const segment of validSegments) {
       random -= segment.weight;
       if (random <= 0) {
-        firstWheelPrize = segment;
+        selectedSegment = segment;
         break;
       }
     }
 
     user.spins -= 1;
 
-    if (firstWheelPrize.specialType === 'Try again') {
+    if (selectedSegment.specialType === 'Try again') {
       await this.userRepository.save(user);
-      return { firstWheelPrize, secondWheelPrize: null };
+      return { firstWheelPrize: selectedSegment, secondWheelPrize: null };
     }
 
     let secondWheelPrize = null;
-    const secondWheelPrizes = firstWheelPrize.secondWheelPrizes || [];
+    const secondWheelPrizes = selectedSegment.secondWheelPrizes || [];
 
     if (secondWheelPrizes.length > 0) {
       const totalWeightSecond = secondWheelPrizes.reduce(
@@ -76,40 +73,37 @@ export class SpinService {
       }
     }
 
-    if (secondWheelPrize) {
-      const balance = await this.balanceRepository.findOne({
-        where: { name: firstWheelPrize.specialType },
+    if (secondWheelPrize && selectedSegment.specialType === 'Token') {
+      const prizeAmount = parseFloat(secondWheelPrize.name);
+      user.balance += prizeAmount;
+    } else if (secondWheelPrize) {
+      let userBalance = await this.userBalanceRepository.findOne({
+        where: {
+          user: { id: user.id },
+          balance: { name: selectedSegment.specialType },
+        },
+        relations: ['balance'],
       });
 
-      if (balance) {
-        let userBalance = await this.userBalanceRepository.findOne({
-          where: { user: { id: user.id }, balance: { id: balance.id } },
+      const prizeAmount = parseFloat(secondWheelPrize.name);
+
+      if (!userBalance) {
+        const balance = await this.balanceRepository.findOne({
+          where: { name: selectedSegment.specialType },
         });
-
-        const prizeAmount = parseFloat(secondWheelPrize.name);
-        console.log('Before update:', userBalance.amount);
-
-        if (!userBalance) {
-          userBalance = this.userBalanceRepository.create({
-            user,
-            balance,
-            amount: prizeAmount,
-          });
-        } else {
-          const currentAmount = parseFloat(
-            userBalance.amount as unknown as string,
-          );
-          userBalance.amount = currentAmount + prizeAmount;
-        }
-
-        console.log('After update:', userBalance.amount);
-
-        await this.userBalanceRepository.save(userBalance);
+        userBalance = this.userBalanceRepository.create({
+          user,
+          balance,
+          amount: prizeAmount,
+        });
+      } else {
+        userBalance.amount += prizeAmount;
       }
+
+      await this.userBalanceRepository.save(userBalance);
     }
 
     await this.userRepository.save(user);
-
-    return { firstWheelPrize, secondWheelPrize };
+    return { firstWheelPrize: selectedSegment, secondWheelPrize };
   }
 }

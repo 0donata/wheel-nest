@@ -8,7 +8,9 @@ import {
 } from 'react-router-dom'
 import { useUserActivity } from './api/hooks'
 import css from './App.module.scss'
+import shibImage from './assets/Doge.png'
 import spinsImage from './assets/Free-spin.png'
+import pepeImage from './assets/Pepe.png'
 import usdtImage from './assets/Tether.png'
 import tokenImage from './assets/Token.png'
 import AdminPanel from './components/Admin/AdminPanel'
@@ -54,6 +56,12 @@ const App = () => {
                     break
                 case 'Free spin':
                     image = spinsImage
+                    break
+                case 'Shib':
+                    image = shibImage
+                    break
+                case 'Pepe':
+                    image = pepeImage
                     break
                 default:
                     image = null
@@ -122,7 +130,10 @@ const MainPage = ({
     winData,
     closeWinPopup,
 }) => {
+    const user = useSelector((state) => state.user)
     const dispatch = useDispatch()
+
+    console.log(user.balance)
 
     useEffect(() => {
         const telegramId = window.Telegram.WebApp.initDataUnsafe.user?.id
