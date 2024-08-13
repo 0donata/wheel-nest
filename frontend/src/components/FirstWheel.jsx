@@ -25,7 +25,7 @@ const segmentConfig = {
         sizeMultiplier: 0.6,
         offsetMultiplier: 0.65,
     },
-    Tether: {
+    USDT: {
         img: 'usdtImage',
         sizeMultiplier: 0.55,
         offsetMultiplier: 0.65,
@@ -35,12 +35,12 @@ const segmentConfig = {
         sizeMultiplier: 0.25,
         offsetMultiplier: 0.35,
     },
-    Pepe: {
+    PEPE: {
         img: 'pepeImage',
         sizeMultiplier: 0.55,
         offsetMultiplier: 0.65,
     },
-    Shib: {
+    SHIB: {
         img: 'dogeImage',
         sizeMultiplier: 0.55,
         offsetMultiplier: 0.65,

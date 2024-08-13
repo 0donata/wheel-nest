@@ -18,49 +18,28 @@ export class SegmentService {
   async updateAll(segments: Partial<Segment>[]): Promise<void> {
     await this.segmentRepository.manager.transaction(
       async (transactionalEntityManager) => {
+        await transactionalEntityManager.query(
+          'DELETE FROM second_wheel_prizes',
+        );
+        await transactionalEntityManager.query('DELETE FROM segments');
+
+        // Insert new segments
         for (const segment of segments) {
-          let segmentEntity: Segment;
-
-          // Check if the segment exists
-          if (segment.id) {
-            // Using findOne with an ID directly
-            segmentEntity = await transactionalEntityManager.findOne(Segment, {
-              where: { id: segment.id },
-            });
-            if (!segmentEntity) {
-              throw new Error(`Segment with ID ${segment.id} not found`);
-            }
-            // Ensure segment has all necessary properties before merging
-            segmentEntity = transactionalEntityManager.merge(
-              Segment,
-              segmentEntity,
-              segment as Segment,
-            );
-          } else {
-            // Create a new segment if no ID is provided
-            segmentEntity = transactionalEntityManager.create(Segment, segment);
-          }
-
-          // Save the segment entity
+          const segmentEntity = transactionalEntityManager.create(
+            Segment,
+            segment,
+          );
           await transactionalEntityManager.save(Segment, segmentEntity);
 
-          // Handling associated secondWheelPrizes
+          // Handle associated secondWheelPrizes
           if (segment.secondWheelPrizes) {
-            // Clear existing prizes
-            const existingPrizes = await transactionalEntityManager.find(
-              SecondWheelPrize,
-              { where: { segment: segmentEntity } },
-            );
-            await transactionalEntityManager.remove(
-              SecondWheelPrize,
-              existingPrizes,
-            );
-
-            // Create new prizes
             for (const prize of segment.secondWheelPrizes) {
               const newPrize = transactionalEntityManager.create(
                 SecondWheelPrize,
-                { ...prize, segment: segmentEntity },
+                {
+                  ...prize,
+                  segment: segmentEntity,
+                },
               );
               await transactionalEntityManager.save(SecondWheelPrize, newPrize);
             }

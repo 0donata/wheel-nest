@@ -13,7 +13,7 @@ const Segments = () => {
     const [localSegments, setLocalSegments] = useState([])
     const [newSegmentName, setNewSegmentName] = useState('')
     const [newSegmentWeight, setNewSegmentWeight] = useState(1)
-    const [newSegmentSpecialType, setNewSegmentSpecialType] = useState('Tether')
+    const [newSegmentSpecialType, setNewSegmentSpecialType] = useState('USDT')
     const [errorMessage, setErrorMessage] = useState('')
     const [saveStatus, setSaveStatus] = useState(null)
 
@@ -149,7 +149,7 @@ const Segments = () => {
         setLocalSegments([...localSegments, newSegment])
         setNewSegmentName('')
         setNewSegmentWeight(1)
-        setNewSegmentSpecialType('Tether')
+        setNewSegmentSpecialType('USDT')
         setErrorMessage('')
     }
 

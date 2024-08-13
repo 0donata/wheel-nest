@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { UserBalance } from './user-balance.entity';
+import { Wallet } from './wallets.entity';
 
 @Entity('users')
 export class User {
@@ -60,6 +60,6 @@ export class User {
   @Column({ default: 1 })
   spins: number;
 
-  @OneToMany(() => UserBalance, (userBalance) => userBalance.user)
-  userBalances: UserBalance[];
+  @OneToMany(() => Wallet, (wallet) => wallet.user)
+  wallets: Wallet[];
 }

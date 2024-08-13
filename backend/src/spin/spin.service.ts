@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Balance } from 'src/entities/balances.entity';
-import { UserBalance } from 'src/entities/user-balance.entity';
 import { Repository } from 'typeorm';
 import { Segment } from '../entities/segment.entity';
+import { Token } from '../entities/tokens.entity';
 import { User } from '../entities/user.entity';
+import { Wallet } from '../entities/wallets.entity';
 
 @Injectable()
 export class SpinService {
@@ -13,10 +13,10 @@ export class SpinService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Segment)
     private readonly segmentRepository: Repository<Segment>,
-    @InjectRepository(UserBalance)
-    private readonly userBalanceRepository: Repository<UserBalance>,
-    @InjectRepository(Balance)
-    private readonly balanceRepository: Repository<Balance>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
   ) {}
 
   async spinWheel(id: number) {
@@ -77,30 +77,32 @@ export class SpinService {
       const prizeAmount = parseFloat(secondWheelPrize.name);
       user.balance += prizeAmount;
     } else if (secondWheelPrize) {
-      let userBalance = await this.userBalanceRepository.findOne({
+      if (selectedSegment.specialType === 'Free spin') {
+        user.spins += parseFloat(secondWheelPrize.name);
+      }
+      let userBalance = await this.walletRepository.findOne({
         where: {
           user: { id: user.id },
-          balance: { name: selectedSegment.specialType },
+          token: { name: selectedSegment.specialType },
         },
-        relations: ['balance'],
+        relations: ['token'],
       });
 
       const prizeAmount = parseFloat(secondWheelPrize.name);
-
+      const token = await this.tokenRepository.findOne({
+        where: { name: selectedSegment.specialType },
+      });
       if (!userBalance) {
-        const balance = await this.balanceRepository.findOne({
-          where: { name: selectedSegment.specialType },
-        });
-        userBalance = this.userBalanceRepository.create({
+        userBalance = this.walletRepository.create({
           user,
-          balance,
-          amount: prizeAmount,
+          token,
+          amount: 0,
         });
-      } else {
-        userBalance.amount += prizeAmount;
       }
 
-      await this.userBalanceRepository.save(userBalance);
+      userBalance.amount += prizeAmount;
+
+      await this.walletRepository.save(userBalance);
     }
 
     await this.userRepository.save(user);

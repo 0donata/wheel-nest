@@ -1,78 +1,81 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Balance } from 'src/entities/balances.entity';
 import { Repository } from 'typeorm';
-import { UserBalance } from '../entities/user-balance.entity';
+import { Token } from '../entities/tokens.entity';
 import { User } from '../entities/user.entity';
+import { Wallet } from '../entities/wallets.entity';
 
 @Injectable()
 export class BalanceService {
   constructor(
-    @InjectRepository(UserBalance)
-    private readonly userBalanceRepository: Repository<UserBalance>,
-    @InjectRepository(Balance)
-    private readonly balanceRepository: Repository<Balance>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<Balance[]> {
-    return this.balanceRepository.find();
+  async findAll(): Promise<Token[]> {
+    return this.tokenRepository.find();
   }
 
   async getBalance(userId: number) {
-    const balances = await this.balanceRepository.find();
-
-    const userBalances = await this.userBalanceRepository.find({
+    const tokens = await this.tokenRepository.find();
+    const wallets = await this.walletRepository.find({
       where: { user: { id: userId } },
-      relations: ['balance'],
+      relations: ['token'],
     });
 
-    const userBalancesMap = userBalances.reduce((acc, ub) => {
-      acc[ub.balance.name] = ub.amount;
+    const walletMap = wallets.reduce((acc, wallet) => {
+      if (wallet.token) {
+        acc[wallet.token.name] = wallet.amount;
+      }
       return acc;
     }, {});
 
-    const result = balances.reduce((acc, balance) => {
-      acc[balance.name] = userBalancesMap[balance.name] || 0;
+    const result = tokens.reduce((acc, token) => {
+      acc[token.name] = walletMap[token.name] || 0;
       return acc;
     }, {});
 
     return result;
   }
 
-  async updateBalance(userId: number, balanceId: number, amount: number) {
+  async updateBalance(userId: number, tokenId: number, amount: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
 
-    const balance = await this.balanceRepository.findOne({
-      where: { id: balanceId },
+    const token = await this.tokenRepository.findOne({
+      where: { id: tokenId },
     });
-    if (!balance) {
-      throw new Error('Balance type not found');
+    if (!token) {
+      throw new Error('Token not found');
     }
 
-    let userBalance = await this.userBalanceRepository.findOne({
-      where: { user: { id: userId }, balance: { id: balanceId } },
-      relations: ['balance'],
+    let wallet = await this.walletRepository.findOne({
+      where: { user: { id: userId }, token: { id: tokenId } },
+      relations: ['token'],
     });
-    if (!userBalance) {
-      userBalance = this.userBalanceRepository.create({
+
+    if (!wallet) {
+      wallet = this.walletRepository.create({
         user,
-        balance,
+        token,
         amount,
       });
     } else {
-      userBalance.amount += amount;
+      wallet.amount += amount;
     }
-    await this.userBalanceRepository.save(userBalance);
+
+    await this.walletRepository.save(wallet);
 
     return {
-      balanceId: userBalance.balance.id,
-      balanceName: userBalance.balance.name,
-      amount: userBalance.amount,
+      tokenId: wallet.token.id,
+      tokenName: wallet.token.name,
+      amount: wallet.amount,
     };
   }
 }

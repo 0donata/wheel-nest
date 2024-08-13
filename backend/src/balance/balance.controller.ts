@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { Balance } from 'src/entities/balances.entity';
+import { Token } from 'src/entities/tokens.entity';
 import { BalanceService } from './balance.service';
 
 @Controller('user/balance')
@@ -28,7 +28,7 @@ export class BalancesController {
   constructor(private balanceService: BalanceService) {}
 
   @Get()
-  findAll(): Promise<Balance[]> {
+  findAll(): Promise<Token[]> {
     return this.balanceService.findAll();
   }
 }

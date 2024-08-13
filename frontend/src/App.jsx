@@ -51,16 +51,16 @@ const App = () => {
                 case 'Token':
                     image = tokenImage
                     break
-                case 'Tether':
+                case 'USDT':
                     image = usdtImage
                     break
                 case 'Free spin':
                     image = spinsImage
                     break
-                case 'Shib':
+                case 'SHIB':
                     image = shibImage
                     break
-                case 'Pepe':
+                case 'PEPE':
                     image = pepeImage
                     break
                 default:
